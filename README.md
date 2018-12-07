@@ -1,5 +1,5 @@
-#Sport Compass internship assignment
-##introduction
+# Sport Compass internship assignment
+## introduction
 Sport compass was looking for a frontend developer intern so a took the challenge
 ##challenge
 1. Design a simple product listing page for an e-commerce store.
