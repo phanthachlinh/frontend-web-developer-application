@@ -1,72 +1,98 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {RemoveFromCart,ChangeCart} from '../actions';
-class Cart extends React.Component {
+import {removeFromCart,updateCart} from '../actions/actions';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {Container,Row,Col} from 'reactstrap';
+class Cart extends React.Component{
   componentDidMount() {
+  }
+  getBeerInfo(id){
+    return this.props.Beers.find(function(beer)
+    {
+      return beer.id == id
+    })
+  }
+  deleteClickHandler(id){
+    this.props.removeFromCart(id)
+  }
+  handleValueChange(e){
+  }
+  selectChangeHandler(id,e){
+    this.props.updateCart({id:id,quantity:e.target.value})
+  }
+  render(){
+    let itemsInfo = [];
+    for(let i = 0; i<this.props.Cart.length; i++){
+      itemsInfo.push([this.props.Beers.find((item)=>{
+        return item.id == this.props.Cart[i].id
+      }
+    )
+  ,this.props.Cart[i].quantity])
+}
+    let renderItems = itemsInfo.map((item)=>{
+      let selectHTML = []
+      for(let i =1; i<11;i++){
 
-  }
-  findCollection(item){
-    return item.collectionId === this
+        selectHTML.push(<option key={i} value={i}>{i}</option>);
 
-  }
-  removeClickHandler(e){
-    this.props.RemoveFromCart(e.target.value)
-    console.log(e.target.value);
-    console.log()
-  }
-  getQuantity(){
-    console.log(this)
-    return <p>3</p>
-  }
-  handleChange(x,e){
-    console.log(e)
-    console.log(x)
-  this.props.ChangeCart({newItem:x,newValue:e.target.value})
-  }
-  render() {
-    let collections =   this.props.Cart.map((item)=>{
-        return this.props.Products.find(this.findCollection.bind(item.collectionId))
-      });
-      console.log(collections)
-   let renderColletion = collections.map(
-      x=>{
-        let quantity = this.props.Cart.find((cartItem)=>x.collectionId == cartItem.collectionId).quantity;
 
+      }
       return(
-       <li key={x.collectionId} className="list-group-item">{x.collectionName}
-         <div className="input-group input-group-sm mb-3">
-           <div className="input-group-prepend">
-             <span className="input-group-text" id="inputGroup-sizing-sm">Amount</span>
-           </div>
-           <input type="text" defaultValue={quantity} onChange={this.handleChange.bind(this,x)} class="form-control" aria-label="Amount" aria-describedby="inputGroup-sizing-sm" />
-           <button className="btn">Edit</button>
-         </div>
-          <button value={x.collectionId} onClick={this.removeClickHandler.bind(this)} className='btn alert'>
-            remove
-          </button>
-        </li>)
-      })
-      console.log(this.props.Cart)
-    return (
-      <div>
-        <ul className="list-group">
-          {renderColletion}
-        </ul>
-        <Link to='/Checkout'><button className="btn">Checkout</button></Link>
-      </div>);
+        <li key={item[0].id} className="list-group-item">
+          <Container>
+            <Row>
+              <Col xs='12' md='3'>
+                <div className='cart__image_wrapper flex-item'>
+                  <img className='cart__image' src={item[0].image_url} />
+                </div>
+                </Col>
+                <Col xs='12' md='3'>
+                  <div className='cart__text flex-item'>
+                    {item[0].name}
+                  </div>
+                </Col>
+                <Col xs='12' md='3'>
+                  <Container>
+                    <Row>
+                      <Col sm='6'>
+                        <div className='flex-item'>
+                          <select className="form-control form-control-lg" value={item[1]} onChange={this.selectChangeHandler.bind(this,item[0].id)}>
+                            {selectHTML}
+                          </select>
+                        </div>
+                      </Col>
+                      <Col sm='6'>
+                        <div className='flex-item'>
+                          <button onClick={this.deleteClickHandler.bind(this,item[0].id)} >delete</button>
+                        </div>
+                      </Col>
+                    </Row>
+                  </Container>
+                </Col>
+              </Row>
+          </Container>
+        </li>
+      )
+    })
+    return(
+      <div className='content__wrapper'>
+      <ul className="list-group">
+      {renderItems}
+      </ul>
+      </div>
+    )
   }
 }
 function mapStateToProps(state){
-  return {Products:state.Products,
-          Cart:state.Cart}
+  return {
+    Beers: state.Beers,
+    Cart: state.Cart
+  }
 }
-function mapStateToDispatch(dispatch){
-  return bindActionCreators({
-    RemoveFromCart:RemoveFromCart,
-    ChangeCart:ChangeCart
-
-  },dispatch)
+function mapDispatchToProps(dispatch){
+  return {
+    removeFromCart: id=>dispatch(removeFromCart(id)),
+    updateCart: item=>dispatch(updateCart(item))
+  }
 }
-export default connect(mapStateToProps,mapStateToDispatch)(Cart)
+export default connect(mapStateToProps,mapDispatchToProps)(Cart)
