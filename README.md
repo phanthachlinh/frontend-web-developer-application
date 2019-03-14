@@ -16,3 +16,10 @@ to start the development server run the start script
 `npm start`
 or
 `yarn start`
+# Sports Compass challenge
+used:
+   ReactJS
+   SaSS
+   Redux
+   Axios
+[Check it out](https://lit-island-89554.herokuapp.com/)
